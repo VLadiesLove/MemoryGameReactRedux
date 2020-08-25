@@ -67,7 +67,7 @@ shuffleState();
     if(!clickedId) {
         clickedId = id;
 
-    } else if(clickedId){
+    } else if(clickedId && clickedId !== id){
 
             if(state.tiles[clickedId-1].color == state.tiles[id-1].color ){
 
