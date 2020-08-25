@@ -31,9 +31,21 @@ let state = {
     
     
 }
+    
+function shuffleState(){
+
+    state.tiles.sort(() => Math.random() - 0.5);
+
+    for(let i = 0; i < state.tiles.length; i++){
+       state.tiles[i].id = i+1;
+    }
+}
+shuffleState();
+    
 
 
-    let timeOut = false;
+
+   
     let clickedId = null;
     let clickBeforeTimeout = false;
 
