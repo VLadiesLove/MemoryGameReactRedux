@@ -3,9 +3,19 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import {renderEntireTree} from './render'
+import store from './store/store'
+import { Provider } from 'react-redux';
 
-renderEntireTree();
+
+ReactDOM.render(
+        <Provider store={store}>
+        <App store={store}/>
+        </Provider>,
+        document.getElementById('root')
+        
+    
+);
+
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
