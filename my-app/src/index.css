@@ -80,4 +80,6 @@ code {
 
 .hidden{
   background-color: #eee;
+  transition: 0.5s;
+  transform: scale(0.9);
 }

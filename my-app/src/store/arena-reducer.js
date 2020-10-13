@@ -1,4 +1,5 @@
-const TOGGLE_TILE = "TOGGLE_TILE";
+const TOGGLE_TILE = "TOGGLE_TILE"
+const CLOSE_TILES = 'CLOSE_TILES'
 
 
 const initialState = {
@@ -20,8 +21,9 @@ const initialState = {
         { id: 14, color: 'pink', hidden: 'hidden', flag: false },
         { id: 15, color: 'black', hidden: 'hidden', flag: false }
     ],
-    clickedId:null,
-    clickBeforeTimeout: false
+    clickedId: null,
+    clickedSecondId:null,
+    isClickBeforeTimeout: false
 }
 
 function shuffleState() {
@@ -35,21 +37,22 @@ function shuffleState() {
 shuffleState();
 
 const arenaReducer = (state = initialState, action) => {
+
     if (action.type === 'TOGGLE_TILE') {
+        if(state.isClickBeforeTimeout === true) return {...state}
+        if (state.tiles[action.id].flag) {return{ ...state, clickedId:null } }
         if (state.clickedId === null) {
-            
             state.clickedId = action.id
-            state.tiles[action.id].hidden = ''
-            state.tiles[action.id].flag = true
-            debugger
-            return{...state,
-                    tiles:state.tiles.map( (t) => {
-                        if (t.id === action.id){
-                            return{...t,hidden : '' }
-                        } else return {...t}
-                    })}
-        } else { debugger
-            if (state.tiles[state.clickedId].color == state.tiles[action.id].color) {
+            return {
+                ...state,
+                tiles: state.tiles.map((t) => {
+                    if (t.id === action.id) {
+                        return { ...t, hidden: '' }
+                    } else return { ...t }
+                })
+            }
+        } else {
+            if (state.tiles[state.clickedId].color === state.tiles[action.id].color && state.clickedId !== action.id) {
                 return {
                     ...state,
                     tiles: state.tiles.map((t) => {
@@ -59,33 +62,46 @@ const arenaReducer = (state = initialState, action) => {
                     }),
                     clickedId: null
                 }
-            } else { debugger
-                    return {...state,
-                    tiles:state.tiles.map( (t) => {
-                        if (t.id === action.id  || t.id === state.clickedId){
-                            return{...t,hidden : 'hidden' }
-                        } else return {...t}
-                    }),
-                    clickedId:null}
-            }
-            
-        }
+            } else {
+                return {
+                    ...state,
+                    isClickBeforeTimeout: true,
+                    tiles: state.tiles.map((t) => {
+                        if (t.id === action.id) {
+                            return { ...t, hidden: '', flag: false }
+                        } else return { ...t }
+                    }) 
+                    , clickedSecondId:action.id
+                }
 
+            }
+        }
+    }
+    else if (action.type === 'CLOSE_TILES') {
         return {
             ...state,
-            tiles: state.tiles.map(t => {
-                if (t.id === action.id+1) {
-                    return { ...t, hidden: '', flag: true }
-                }
-                return t;
+            isClickBeforeTimeout: false,
+            tiles: state.tiles.map((t) => {
+                if (t.id === state.clickedSecondId || t.id === state.clickedId) {
+                    return { ...t, hidden: 'hidden', flag:false}
+                } else return { ...t }
             }),
-            clickedId:action.id
+            clickedId: null,
+            clickedSecondId:null
         }
-    } else return {...state};
+    } else return { ...state }
 }
 
 export const toggleTileActionCreator = (id) => {
-    return {type: TOGGLE_TILE, id}
+    return { type: TOGGLE_TILE, id }
+}
+
+export const closeTilesActionCreator = (id) => {
+    return { type: CLOSE_TILES, id }
+}
+
+export const toggleTileThunkCreator = () => (dispatch) => {
+     setTimeout( () => dispatch(closeTilesActionCreator()), 600)
 }
 
 export default arenaReducer;
